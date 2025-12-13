@@ -1,4 +1,9 @@
 import swaggerJsdoc from 'swagger-jsdoc';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const PORT = process.env.PORT || 3000;
 
 const options: swaggerJsdoc.Options = {
     definition: {
@@ -10,8 +15,12 @@ const options: swaggerJsdoc.Options = {
         },
         servers: [
             {
-                url: 'http://localhost:3000',
+                url: `http://localhost:${PORT}`,
                 description: 'Local server',
+            },
+            {
+                url: 'https://innoveft-api-1.onrender.com',
+                description: 'Production server',
             },
         ],
         components: {
@@ -43,9 +52,10 @@ const options: swaggerJsdoc.Options = {
             },
         ],
     },
-    apis: ['./src/routes/*.ts'], // Path to the API docs
+    apis: ['./src/routes/*.ts', './dist/routes/*.js'], // Path to the API docs (both dev and prod)
 };
 
 const specs = swaggerJsdoc(options);
 
 export default specs;
+

@@ -7,12 +7,6 @@ const router = (0, express_1.Router)();
 router.use(auth_middleware_1.authenticateToken); // Protect all task routes
 /**
  * @swagger
- * tags:
- *   name: Tasks
- *   description: Task management API
- */
-/**
- * @swagger
  * /api/tasks:
  *   post:
  *     summary: Create a new task
@@ -25,20 +19,35 @@ router.use(auth_middleware_1.authenticateToken); // Protect all task routes
  *         application/json:
  *           schema:
  *             type: object
- *             required: [title]
+ *             required:
+ *               - title
  *             properties:
  *               title:
  *                 type: string
+ *                 example: Complete project
  *               description:
  *                 type: string
+ *                 example: Finish the backend API
  *               status:
  *                 type: string
  *                 enum: [OPEN, IN_PROGRESS, DONE]
+ *                 default: OPEN
  *     responses:
  *       201:
- *         description: Task created
+ *         description: Task created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Task'
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
+ */
+router.post("/", task_controller_1.createTask);
+/**
+ * @swagger
+ * /api/tasks:
  *   get:
- *     summary: Get all tasks
+ *     summary: Get all tasks for the authenticated user
  *     tags: [Tasks]
  *     security:
  *       - bearerAuth: []
@@ -51,14 +60,15 @@ router.use(auth_middleware_1.authenticateToken); // Protect all task routes
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Task'
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
  */
-router.post('/', task_controller_1.createTask);
-router.get('/', task_controller_1.getTasks);
+router.get("/", task_controller_1.getTasks);
 /**
  * @swagger
  * /api/tasks/{id}:
  *   get:
- *     summary: Get a task by ID
+ *     summary: Get a specific task by ID
  *     tags: [Tasks]
  *     security:
  *       - bearerAuth: []
@@ -68,15 +78,23 @@ router.get('/', task_controller_1.getTasks);
  *         required: true
  *         schema:
  *           type: string
+ *         description: Task ID
  *     responses:
  *       200:
- *         description: Task found
+ *         description: Task details
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Task'
  *       404:
  *         description: Task not found
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
+ */
+router.get("/:id", task_controller_1.getTask);
+/**
+ * @swagger
+ * /api/tasks/{id}:
  *   put:
  *     summary: Update a task
  *     tags: [Tasks]
@@ -88,6 +106,7 @@ router.get('/', task_controller_1.getTasks);
  *         required: true
  *         schema:
  *           type: string
+ *         description: Task ID
  *     requestBody:
  *       required: true
  *       content:
@@ -104,7 +123,20 @@ router.get('/', task_controller_1.getTasks);
  *                 enum: [OPEN, IN_PROGRESS, DONE]
  *     responses:
  *       200:
- *         description: Task updated
+ *         description: Task updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Task'
+ *       404:
+ *         description: Task not found
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
+ */
+router.put("/:id", task_controller_1.updateTask);
+/**
+ * @swagger
+ * /api/tasks/{id}:
  *   delete:
  *     summary: Delete a task
  *     tags: [Tasks]
@@ -116,11 +148,14 @@ router.get('/', task_controller_1.getTasks);
  *         required: true
  *         schema:
  *           type: string
+ *         description: Task ID
  *     responses:
- *       204:
- *         description: Task deleted
+ *       200:
+ *         description: Task deleted successfully
+ *       404:
+ *         description: Task not found
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
  */
-router.get('/:id', task_controller_1.getTask);
-router.put('/:id', task_controller_1.updateTask);
-router.delete('/:id', task_controller_1.deleteTask);
+router.delete("/:id", task_controller_1.deleteTask);
 exports.default = router;

@@ -4,6 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
+const PORT = process.env.PORT || 3000;
 const options = {
     definition: {
         openapi: '3.0.0',
@@ -14,8 +17,12 @@ const options = {
         },
         servers: [
             {
-                url: 'http://localhost:3000',
+                url: `http://localhost:${PORT}`,
                 description: 'Local server',
+            },
+            {
+                url: 'https://innoveft-api-1.onrender.com',
+                description: 'Production server',
             },
         ],
         components: {
@@ -47,7 +54,7 @@ const options = {
             },
         ],
     },
-    apis: ['./src/routes/*.ts'], // Path to the API docs
+    apis: ['./src/routes/*.ts', './dist/routes/*.js'], // Path to the API docs (both dev and prod)
 };
 const specs = (0, swagger_jsdoc_1.default)(options);
 exports.default = specs;

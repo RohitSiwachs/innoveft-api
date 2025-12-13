@@ -15,26 +15,50 @@ const router = (0, express_1.Router)();
  *         application/json:
  *           schema:
  *             type: object
- *             required: [email, password]
+ *             required:
+ *               - email
+ *               - password
+ *               - name
  *             properties:
  *               email:
  *                 type: string
+ *                 format: email
+ *                 example: user@example.com
  *               password:
  *                 type: string
+ *                 minLength: 6
+ *                 example: password123
  *               name:
  *                 type: string
+ *                 example: John Doe
  *     responses:
  *       201:
- *         description: User created successfully
+ *         description: User registered successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     name:
+ *                       type: string
  *       400:
- *         description: Bad request
+ *         description: Bad request - validation error or user already exists
  */
-router.post('/register', auth_controller_1.register);
+router.post("/register", auth_controller_1.register);
 /**
  * @swagger
  * /api/auth/login:
  *   post:
- *     summary: Login a user
+ *     summary: Login user
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -42,17 +66,32 @@ router.post('/register', auth_controller_1.register);
  *         application/json:
  *           schema:
  *             type: object
- *             required: [email, password]
+ *             required:
+ *               - email
+ *               - password
  *             properties:
  *               email:
  *                 type: string
+ *                 format: email
+ *                 example: user@example.com
  *               password:
  *                 type: string
+ *                 example: password123
  *     responses:
  *       200:
- *         description: User logged in, token received
- *       400:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 token:
+ *                   type: string
+ *                   description: JWT token for authentication
+ *       401:
  *         description: Invalid credentials
  */
-router.post('/login', auth_controller_1.login);
+router.post("/login", auth_controller_1.login);
 exports.default = router;

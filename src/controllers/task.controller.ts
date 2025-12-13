@@ -100,10 +100,15 @@ export const deleteTask = async (req: AuthRequest, res: Response) => {
         const existingTask = await prisma.task.findFirst({ where: { id, userId } });
         if (!existingTask) return res.status(404).json({ error: 'Task not found' });
 
+        // First delete related IntegrationLogs to avoid foreign key constraint error
+        await prisma.integrationLog.deleteMany({ where: { taskId: id } });
+        
+        // Then delete the task
         await prisma.task.delete({ where: { id } });
 
-        res.status(204).send();
+        res.status(200).json({ message: 'Task deleted successfully' });
     } catch (error) {
+        console.error('Delete task error:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 };

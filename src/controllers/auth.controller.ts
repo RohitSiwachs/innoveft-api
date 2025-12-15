@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 import prisma from '../utils/prisma';
+import crypto from "crypto"
 
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecret';
 
@@ -27,9 +28,12 @@ export const register = async (req: Request, res: Response) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
+        const verifyToken = crypto.randomBytes(32).toString("hex")
         const user = await prisma.user.create({
-            data: { email, password: hashedPassword, name },
+            data: { email, password: hashedPassword, name,verifyToken ,isVerified:false },
         });
+
+        const verifyLink = '${process.env.FRONTEND_URL}/verify?token=${verifyToken}'
 
         const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
         res.status(201).json({ token, user: { id: user.id, email: user.email, name: user.name } });
